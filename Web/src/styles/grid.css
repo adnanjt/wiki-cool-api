@@ -1,0 +1,38 @@
+.grid-container {
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+}
+
+.grid-item {
+  background: #f0f0f0;
+  padding: 16px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.pagination button {
+  margin: 0 8px;
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.pagination button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.pagination span {
+  margin: 0 8px;
+}
