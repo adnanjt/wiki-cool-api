@@ -115,12 +115,6 @@ interface WikiImage {
   height: number;
 }
 
-// interface TodayFeatured {
-//   titles: Title;
-//   thumbnail: Thumbnail;
-//   description: string;
-// };
-
 export interface Wiki {
   title: string;
   image?: WikiImage;
