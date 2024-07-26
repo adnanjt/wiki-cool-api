@@ -126,4 +126,5 @@ export interface Wiki {
   image?: WikiImage;
   description: string;
   related?: string;
+  type: string;
 }

@@ -4,7 +4,7 @@ import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom, map as rxMapper } from 'rxjs';
 import { Wiki, WikiDto, Article } from './app.model';
 import { WikiGetAllQuery } from './query.dto';
-import he from 'he';
+import {decode as heDecode} from 'he';
 
 @Injectable()
 export class AppService {
@@ -43,6 +43,7 @@ export class WikiService {
             }
           : null,
         description: data.tfa.description,
+        type: "tfa"
       });
     }
 
@@ -60,6 +61,7 @@ export class WikiService {
               }
             : null,
           description: article.description,
+          type: "mostread"
         });
       });
     }
@@ -75,6 +77,7 @@ export class WikiService {
             }
           : null,
         description: data.picture.description.text,
+        type: "picture"
       });
     }
 
@@ -94,10 +97,33 @@ export class WikiService {
               }
             : null,
           description: link.description,
-          // related: stripHtml(he.decode(decodeUnicode(news.story)))
+          related: stripHtml(heDecode(decodeUnicode(news.story))),
+          type: "news"
         });
       }));
     }
+
+    if(data.onthisday) {
+      // this.logger.log(data.news);
+
+      data.onthisday.forEach(day => day.pages.forEach(page => {
+        // this.logger.log(link);
+        wikiList.push({
+          title: page.titles.normalized,
+          image: page.thumbnail
+            ? {
+                source: page.thumbnail.source,
+                width: page.thumbnail.width,
+                height: page.thumbnail.height,
+              }
+            : null,
+          description: page.description,
+          related: stripHtml(heDecode(decodeUnicode(day.text))),
+          type: "onthisday"
+        });
+      }));
+    }
+
 
     return wikiList;
   }
