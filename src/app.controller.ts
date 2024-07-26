@@ -2,7 +2,7 @@ import { Controller, Get, Param, Query } from '@nestjs/common';
 import { AppService, WikiService } from './app.service';
 import { WikiGetAllQuery } from './query.dto';
 import { validateOrReject } from 'class-validator';
-import { Wiki, WikiDto } from './app.model';
+import { Wiki } from './app.model';
 
 @Controller()
 export class AppController {
@@ -27,13 +27,6 @@ export class WikiController {
       console.log('Validation failed', errors);
     }
   }
-  // TODO see what fields are needed because for translation we need to know the spesific content to translkate
-  // Display the title, thumbnail image (if available), and a brief excerpt or description for each piece of content.
-  // tfa.titles.display
-  //   tfa.thumbnail.source
-  // tfa.thumbnail.width
-  // tfa.thumbnail.height
-  // tfa.description
 
   @Get('translate')
   async getAllTranslate(

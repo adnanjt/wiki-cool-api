@@ -4,6 +4,7 @@ import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom, map as rxMapper } from 'rxjs';
 import { Wiki, WikiDto, Article } from './app.model';
 import { WikiGetAllQuery } from './query.dto';
+import he from 'he';
 
 @Injectable()
 export class AppService {
@@ -11,6 +12,16 @@ export class AppService {
   healthCheck(): string {
     return 'Api is up';
   }
+}
+
+function decodeUnicode(str) {
+  return str.replace(/\\u([\dA-F]{4})/gi, function (match, grp) {
+    return String.fromCharCode(parseInt(grp, 16));
+  });
+}
+
+function stripHtml(html) {
+  return html.replace(/<[^>]*>/g, '');
 }
 
 @Injectable()
@@ -66,23 +77,27 @@ export class WikiService {
         description: data.picture.description.text,
       });
     }
-    // TODO check why news causes an error
-    // if(data.news) {
-    //   if(data.news.links){
-    //     this.logger.log(data.news.links);
-    //   }
 
-    //   // data.news.links.forEach(article => {
+    // this.logger.log(data);
+    if(data.news) {
+      // this.logger.log(data.news);
 
-    //   //   this.logger.log(article);
-
-    //   //   wikiList.push({
-    //   //     title: article.titles.normalized,
-    //   //     image: article.thumbnail? { source:article.thumbnail.source, width:article.thumbnail.width, height: article.thumbnail.height }: null,
-    //   //     description: article.description
-    //   //   });
-    //   // });
-    // }
+      data.news.forEach(news => news.links.forEach(link => {
+        // this.logger.log(link);
+        wikiList.push({
+          title: link.titles.normalized,
+          image: link.thumbnail
+            ? {
+                source: link.thumbnail.source,
+                width: link.thumbnail.width,
+                height: link.thumbnail.height,
+              }
+            : null,
+          description: link.description,
+          // related: stripHtml(he.decode(decodeUnicode(news.story)))
+        });
+      }));
+    }
 
     return wikiList;
   }
@@ -96,8 +111,7 @@ export class WikiService {
         )
         .pipe(
           // rxMapper(result => {
-          //   // this.convertDataToWiki(result.data)
-          //   // this.logger.log(result.data.tfa)
+          //   this.logger.log(result.data);
           //   return result
           // }),
           catchError((error) => {
@@ -106,7 +120,7 @@ export class WikiService {
           }),
         ),
     );
-    return data;
+
     return this.convertDataToWiki(data);
   }
 }

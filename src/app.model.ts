@@ -2,7 +2,7 @@ export interface WikiDto {
   tfa: TodayFeatured;
   mostread: MostRead;
   picture: PictureOfTheDay;
-  news: News;
+  news: News[];
   onthisday: OnThisDay[];
 }
 
@@ -50,6 +50,13 @@ export interface MostRead {
   date: string;
 }
 
+export interface Link {
+  title: string;
+  titles: Titles;
+  thumbnail?: Thumbnail;
+  description: string;
+}
+
 export interface Article {
   title: string;
   titles: Titles;
@@ -78,7 +85,7 @@ export interface Story {
 
 export interface News {
   story: string;
-  links?: Article[];
+  links: Link[];
 }
 
 export interface Image {
@@ -92,15 +99,9 @@ export interface OnThisDay {
 }
 
 export interface Page {
-  type: string;
-  title: string;
-  displaytitle: string;
-  namespace: Namespace;
-  wikibase_item: string;
   titles: Titles;
   thumbnail: Thumbnail;
   description: string;
-  content_urls: ContentUrls;
 }
 
 export interface Namespace {
@@ -124,4 +125,5 @@ export interface Wiki {
   title: string;
   image?: WikiImage;
   description: string;
+  related?: string;
 }
