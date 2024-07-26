@@ -38,31 +38,80 @@ const Grid = () => {
     setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
   };
 
-  const callWikiApi = async (language: string, date: string) => {
-    try {
-      const { data } = await axios.post(
-        "https://translation.googleapis.com/language/translate/v2?key=AIzaSyCf0Xy0OnhxlduyEt3K8zP-sOuu-l_u6uA",
-        {
-          q: input,
-          target: languageCode,
-        },
-        { cancelToken: cancelToken.token }
-      );
+  // const callWikiApi = async (language: string, date: string) => {
+  //   try {
+  //     const { data } = await axios.post(
+  //       "https://translation.googleapis.com/language/translate/v2?key=AIzaSyCf0Xy0OnhxlduyEt3K8zP-sOuu-l_u6uA",
+  //       {
+  //         q: input,
+  //         target: languageCode,
+  //       },
+  //       { cancelToken: cancelToken.token }
+  //     );
 
-      return data;
-    } catch (err) {
-      console.log(err);
+  //     return data;
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  //   return {};
+  // };
+
+  const [date, setDate] = useState<string>("2024/07/06");
+  const [language, setLanguage] = useState<string>("en");
+  const [dateError, setDateError] = useState<string>("");
+  const [languageError, setLanguageError] = useState<string>("");
+
+  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    const dateRegex = /^\d{4}\/\d{2}\/\d{2}$/;
+    if (dateRegex.test(value)) {
+      setDate(value);
+      setDateError("");
+    } else {
+      setDateError("Date must be in format YYYY/MM/DD");
     }
-    return {};
   };
 
-  const [date, setDate] = useState("");
-  const [language, setLanguage] = useState("");
+  const handleLanguageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value.toLowerCase();
+    if (value === "en" || value === "es") {
+      setLanguage(value);
+      setLanguageError("");
+    } else {
+      setLanguageError("Language must be either 'en' or 'es'");
+    }
+  };
 
-  useEffect(() => {}, [date, language]);
 
   return (
     <div>
+      <div className="wiki-inputs">
+        <div className="input-container">
+          {dateError && <div className="error-message">{dateError}</div>}
+          <label htmlFor="date">Date (YYYY/MM/DD): </label>
+          <input
+            type="text"
+            id="date"
+            value={date}
+            onChange={handleDateChange}
+            className={`input-field ${dateError ? "error" : ""}`}
+          />
+        </div>
+        <div className="input-container">
+          {languageError && <div className="error-message">{languageError}</div>}
+          <label htmlFor="language">Language (en or es): </label>
+          <input
+            type="text"
+            id="language"
+            value={language}
+            onChange={handleLanguageChange}
+            className={`input-field ${languageError ? "error" : ""}`}
+          />
+        </div>
+
+      </div>
+
+
       <div
         className="grid-container"
         style={{ gridTemplateColumns: `repeat(3, 1fr)` }}

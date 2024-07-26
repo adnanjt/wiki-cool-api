@@ -36,3 +36,51 @@
 .pagination span {
   margin: 0 8px;
 }
+
+
+
+.input-container {
+  margin: 10px 0;
+  margin-right: 10px;
+}
+
+label {
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.input-field {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.input-field:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  outline: none;
+}
+
+.wiki-inputs {
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  /* height: 100vh; */
+  /* background-color: #f0f0f0; */
+}
+
+
+
+
+.error {
+  border-color: #ff0000;
+}
+
+.error-message {
+  color: #ff0000;
+  font-size: 0.875em;
+  position: absolute;
+  top: -20px;
+}
