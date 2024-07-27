@@ -4,7 +4,7 @@ import "../styles/grid.css";
 import {Wiki} from "../models/models"
 
 interface InputProps {
-  items: Wiki[];
+  items: Wiki[] | null;
 }
 
 const Grid: React.FC<InputProps> = ({ items }) => {
@@ -15,10 +15,10 @@ const Grid: React.FC<InputProps> = ({ items }) => {
   // const [totalPages, setTotalPages] = useState(1);
   
   
-  const totalPages = Math.ceil(items.length / itemsPerPage);
+  const totalPages = items? Math.ceil(items.length / itemsPerPage): 0;
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentItems = items.slice(startIndex, endIndex);
+  const currentItems = items? items.slice(startIndex, endIndex) : [];
 
   const handlePrevious = () => {
     setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
@@ -28,23 +28,6 @@ const Grid: React.FC<InputProps> = ({ items }) => {
     setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
   };
 
-  // const callWikiApi = async (language: string, date: string) => {
-  //   try {
-  //     const { data } = await axios.post(
-  //       "https://translation.googleapis.com/language/translate/v2?key=AIzaSyCf0Xy0OnhxlduyEt3K8zP-sOuu-l_u6uA",
-  //       {
-  //         q: input,
-  //         target: languageCode,
-  //       },
-  //       { cancelToken: cancelToken.token }
-  //     );
-
-  //     return data;
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  //   return {};
-  // };
 
 
 

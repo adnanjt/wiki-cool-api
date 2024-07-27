@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import axios, { AxiosResponse, AxiosRequestConfig } from "axios";
 
 const useApiHook = <T>(url: string, params?: AxiosRequestConfig) => {
@@ -6,23 +6,31 @@ const useApiHook = <T>(url: string, params?: AxiosRequestConfig) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const response: AxiosResponse<T> = await axios.get(url, params);
-        setData(response.data);
-        setLoading(false);
-      } catch (error) {
-        setError("Error getting the data");
-        setLoading(false);
-      }
-    };
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const response: AxiosResponse<T> = await axios.get(url, {
+        ...params,
+        headers: {
+          ...params?.headers,
+          'Access-Control-Allow-Origin': '*',
+        },
+      });
+      setData(response.data);
+      setLoading(false);
 
-    fetchData();
-  }, []);
+      console.log("DATAAAA: ");
+      console.log(response.data);
+      setError(null);
 
-  return { data, loading, error };
+    } catch (error) {
+      console.log(error);
+      setError("Error getting the data");
+      setLoading(false);
+    }
+  };
+
+  return { data, loading, error, fetchData };
 };
 
 export default useApiHook;
