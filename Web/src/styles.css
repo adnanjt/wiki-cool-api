@@ -59,7 +59,8 @@ body, html {
 
 /* StyledHeader.css */
 .styled-header {
-  background: linear-gradient(45deg, #3b5998, #8b9dc3);
+  /* background: linear-gradient(45deg, #3b5998, #8b9dc3); */
+  background: linear-gradient(45deg, #BACCC1, #A27E77);
   padding: 0 50px;
   display: flex;
   align-items: center;

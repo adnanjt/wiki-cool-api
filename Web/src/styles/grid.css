@@ -92,6 +92,7 @@ label {
   border: none;
   cursor: pointer;
   border-radius: 12px;
+  height: inherit;
 }
 
 .submit-button:disabled {

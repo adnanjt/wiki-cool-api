@@ -1,7 +1,9 @@
 import React, { useState, useEffect  } from "react";
 import "../styles/grid.css";
-import { Layout, Flex } from "antd";
-import { Input as AntInput } from "antd";
+import { Layout, Flex, Button, Input as AntInput, Select, Space, DatePicker, Tooltip } from "antd";
+import { SearchOutlined } from '@ant-design/icons';
+import type { DatePickerProps } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 
 interface InputProps {
   date: string;
@@ -20,11 +22,15 @@ const Input: React.FC<InputProps> = ({ date, setDate, language, setLanguage, set
     setHasError(!!dateError || !!languageError);
   }, [dateError, languageError, setHasError]);
 
-  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
+  // const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+
+  // };
+
+  const handleDateChange: DatePickerProps['onChange'] = (date, dateString) => {
+    // console.log(date, dateString);
     const dateRegex = /^\d{4}\/\d{2}\/\d{2}$/;
-    setDate(value);
-    if (dateRegex.test(value)) {
+    setDate(dateString as string);
+    if (dateRegex.test(dateString as string)) {
       setDateError("");
     } else {
       setDateError("Date must be in format YYYY/MM/DD");
@@ -46,39 +52,35 @@ const Input: React.FC<InputProps> = ({ date, setDate, language, setLanguage, set
       onSubmit();
     }
   };
-
+// Todo figure out want languages are suported and translatable so I can just autocomplete the input maybe ? 
   return (
     <div>
       <Flex>
-      <div className="wiki-inputs">
-        <div className="input-container">
-          <label htmlFor="date">Date (YYYY/MM/DD): </label>
-          <AntInput
-            type="text"
-            id="date"
-            value={date}
-            onChange={handleDateChange}
-            className={`input-field ${dateError ? "error" : ""}`}
-          />
-          {dateError && <div className="error-message">{dateError}</div>}
-        </div>
-        <div className="input-container">
-          <label htmlFor="language">Language (en or es): </label>
-          <AntInput
-            type="text"
-            id="language"
-            value={language}
-            onChange={handleLanguageChange}
-            className={`input-field ${languageError ? "error" : ""}`}
-          />
-          {languageError && <div className="error-message">{languageError}</div>}
-        </div>
-        <div className="input-container" >
-          <button className="submit-button" onClick={handleSubmit} disabled={!!dateError || !!languageError}>
-            Submit
-          </button>
-        </div>
-      </div>
+        <Tooltip title="Select a date and language to find featured content on Wikipedia">
+          <QuestionCircleOutlined style={{ fontSize: '24px', color: 'white', marginRight: '20px' }} />
+        </Tooltip>
+      
+
+        <Space direction="vertical" size="middle">
+          <Space.Compact size="large">
+            <DatePicker style={{ width: '100%' }} type="text" id="date"
+              format="YYYY/MM/DD" 
+              onChange={handleDateChange}
+              // className={`${dateError ? "error" : ""}`} 
+              placeholder="(YYYY/MM/DD)" />
+              {dateError && <div className="error-message">{dateError}</div>}
+            <AntInput type="text"
+              id="language"
+              maxLength={2}
+              value={language}
+              onChange={handleLanguageChange}
+              className={`input-field ${languageError ? "error" : ""}`} placeholder="Language: en" />
+              {languageError && <div className="error-message">{languageError}</div>}
+            <Button type="primary" className="submit-button" onClick={handleSubmit} disabled={!!dateError || !!languageError}>
+              Submit
+            </Button>
+          </Space.Compact>
+        </Space>
       </Flex>
     </div>
     

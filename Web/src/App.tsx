@@ -15,6 +15,7 @@ const headerStyle: React.CSSProperties = {
   paddingInline: 48,
   lineHeight: '64px',
   backgroundColor: '#BACCC1',
+   width: '100%'
 };
 
 const contentStyle: React.CSSProperties = {
@@ -102,8 +103,8 @@ const App: React.FC = () => {
   <div className="App">
     <Flex gap="middle" wrap>
       <Layout style={layoutStyle}>
-        <Header className="styled-header" style={headerStyle}>      
-          <Row justify="space-between" align="middle">
+        <Header className="styled-header" style={headerStyle} >      
+          <Row align="middle" justify="space-between" style={{ width: '100%' }} >
             <Col>
               <img src="/path/to/your/image.png" alt="Logo" className="header-logo" />
             </Col>
