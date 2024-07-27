@@ -91,3 +91,22 @@ body, html {
     transform: translateY(0);
   }
 }
+
+
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+}
+
+footer {
+  background: #333;
+  color: white;
+  text-align: center;
+  padding: 1em;
+}

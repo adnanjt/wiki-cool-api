@@ -9,96 +9,122 @@ interface InputProps {
   items: Wiki[] | null;
 }
 
-const tabList = [
-  {
-    key: 'tab1',
-    tab: 'tab1',
-  },
-  {
-    key: 'tab2',
-    tab: 'tab2',
-  },
-];
-
-const contentList: Record<string, React.ReactNode> = {
-  tab1: <p>content1</p>,
-  tab2: <p>content2</p>,
-};
-
 const tabListNoTitle = [
   {
-    key: 'article',
-    label: 'article',
+    key: 'tfa',
+    label: 'featured article',
   },
   {
-    key: 'app',
-    label: 'app',
+    key: 'mostread',
+    label: `day most read`,
   },
   {
-    key: 'project',
-    label: 'project',
+    key: 'image',
+    label: 'featured image',
+  },
+  {
+    key: 'news',
+    label: 'news',
+  },
+  {
+    key: 'onthisday',
+    label: 'events',
   },
 ];
 
 
 
 const Grid: React.FC<InputProps> = ({ items }) => {
-  const [activeTabKey1, setActiveTabKey1] = useState<string>('tab1');
+  // const [activeTabKey1, setActiveTabKey1] = useState<string>('tab1');
   const [activeTabKey2, setActiveTabKey2] = useState<string>('app');
 
-  const onTab1Change = (key: string) => {
-    setActiveTabKey1(key);
-  };
+  // const onTab1Change = (key: string) => {
+  //   setActiveTabKey1(key);
+  // };
   const onTab2Change = (key: string) => {
     setActiveTabKey2(key);
   };
 
 
-  const itemsPerPage = 5;
 
 
-  const [currentPage, setCurrentPage] = useState(1);
-  // const [totalPages, setTotalPages] = useState(1);
+
+  // const getContentForTap: DatePickerProps['onChange'] = (date, dateString) => {
+  //   // console.log(date, dateString);
+  //   const dateRegex = /^\d{4}\/\d{2}\/\d{2}$/;
+  //   setDate(dateString as string);
+  //   if (dateRegex.test(dateString as string)) {
+  //     setDateError("");
+  //   } else {
+  //     setDateError("Date must be in format YYYY/MM/DD");
+  //   }
+  // };
+  // tabListNoTitle[1]["key"]
+
+  const getContentForTap = (tapKey: string): JSX.Element => {
+    console.log(tapKey)
+    // const items
+    const itemsPerPage = 5;
+
+
+    const [currentPage, setCurrentPage] = useState(1);
+    // const [totalPages, setTotalPages] = useState(1);
+    const categorizedItems = items? items.filter((item) => item.type === tapKey): []
+    
+    const totalPages = categorizedItems? Math.ceil(categorizedItems.length / itemsPerPage): 0;
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentItems = categorizedItems? categorizedItems.slice(startIndex, endIndex) : [];
+    
+    const handlePrevious = () => {
+      setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
+    };
   
-  
-  const totalPages = items? Math.ceil(items.length / itemsPerPage): 0;
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentItems = items? items.slice(startIndex, endIndex) : [];
+    const handleNext = () => {
+      setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
+    };
 
-  const handlePrevious = () => {
-    setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
-  };
-
-  const handleNext = () => {
-    setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
+    return (
+      <>
+        <div
+          className="grid-container"
+          style={{ gridTemplateColumns: `repeat(3, 1fr)` }}
+        >
+          {currentItems
+            .map((item, index) => (
+              <div key={index}>
+                <WikiCard
+                  title={item.title}
+                  description={item.description}
+                  source={item.image?.source || "https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg"}
+                />
+              </div>
+            ))}
+          
+        </div>
+        <br/>
+        <div className="pagination">
+          <button onClick={handlePrevious} disabled={currentPage === 1}>
+            Previous
+          </button>
+          <span>
+            Page {currentPage} of {totalPages}
+          </span>
+          <button onClick={handleNext} disabled={currentPage === totalPages}>
+            Next
+          </button>
+        </div>
+      </>
+    );
   };
 
 
   const contentListNoTitle: Record<string, React.ReactNode> = {
-    article: <><div
-    className="grid-container"
-    style={{ gridTemplateColumns: `repeat(3, 1fr)` }}
-  >
-    {currentItems.map((item, index) => (
-      <div key={index} className="grid-item">
-        {<> <WikiCard title={item.title} description={item.description} source={item.image?.source? item.image.source: "https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg"}/></>}
-      </div>
-    ))}
-  </div>
-  <div className="pagination">
-    <button onClick={handlePrevious} disabled={currentPage === 1}>
-      Previous
-    </button>
-    <span>
-      Page {currentPage} of {totalPages}
-    </span>
-    <button onClick={handleNext} disabled={currentPage === totalPages}>
-      Next
-    </button>
-  </div></>,
-    app: <p>app content</p>,
-    project: <p>project content</p>,
+    tfa: getContentForTap(tabListNoTitle[0]["key"]),
+    mostread: getContentForTap(tabListNoTitle[1]["key"]),
+    image: getContentForTap(tabListNoTitle[2]["key"]),
+    news: getContentForTap(tabListNoTitle[3]["key"]),
+    onthisday: getContentForTap(tabListNoTitle[4]["key"]),
   };
 
 
@@ -116,7 +142,9 @@ const Grid: React.FC<InputProps> = ({ items }) => {
           }}
         >
           {contentListNoTitle[activeTabKey2]}
+
         </Card>
+
       </>
 
       {/* <div

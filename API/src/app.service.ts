@@ -34,14 +34,16 @@ export class WikiService {
     thumbnail: { source: string; width: number; height: number } | null,
     description: string,
     type: string,
-    related?: string
+    contentUrl: string,
+    related?: string,
   ): Wiki {
     return {
       title,
       image: thumbnail ? { source: thumbnail.source, width: thumbnail.width, height: thumbnail.height } : null,
       description,
       type,
-      related
+      related,
+      contentUrl
     };
   }
 
@@ -67,7 +69,8 @@ export class WikiService {
         data.tfa.titles.normalized,
         data.tfa.thumbnail,
         data.tfa.description,
-        "tfa"
+        "tfa",
+        data.tfa.content_urls.desktop.page
       ));
     }
 
@@ -77,7 +80,8 @@ export class WikiService {
           article.titles.normalized,
           article.thumbnail,
           article.description,
-          "mostread"
+          "mostread",
+          article.content_urls.desktop.page
         ));
       });
     }
@@ -87,7 +91,8 @@ export class WikiService {
         data.picture.title,
         data.picture.thumbnail,
         data.picture.description.text,
-        "picture"
+        "picture",
+        data.picture.thumbnail.source
       ));
     }
 
@@ -98,6 +103,7 @@ export class WikiService {
           link.thumbnail,
           link.description,
           "news",
+          link.content_urls.desktop.page,
           stripHtml(heDecode(decodeUnicode(news.story)))
         ));
       }));
@@ -110,6 +116,7 @@ export class WikiService {
           page.thumbnail,
           page.description,
           "onthisday",
+          page.content_urls.desktop.page,
           day.text
         ));
       }));

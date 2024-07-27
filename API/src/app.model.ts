@@ -55,6 +55,7 @@ export interface Link {
   titles: Titles;
   thumbnail?: Thumbnail;
   description: string;
+  content_urls: ContentUrls;
 }
 
 export interface Article {
@@ -65,6 +66,7 @@ export interface Article {
   pageviews: number;
   rank: number;
   description: string;
+  content_urls: ContentUrls;
 }
 
 export interface PictureOfTheDayDescription {
@@ -102,6 +104,7 @@ export interface Page {
   titles: Titles;
   thumbnail: Thumbnail;
   description: string;
+  content_urls: ContentUrls;
 }
 
 export interface Namespace {
@@ -121,4 +124,14 @@ export interface Wiki {
   description: string;
   related?: string;
   type: string;
+  contentUrl: string;
 }
+
+
+// "content_urls": {
+//   "desktop": {
+//     "page": "https://en.wikipedia.org/wiki/Aston_Martin_DB9",
+//     "revisions": "https://en.wikipedia.org/wiki/Aston_Martin_DB9?action=history",
+//     "edit": "https://en.wikipedia.org/wiki/Aston_Martin_DB9?action=edit",
+//     "talk": "https://en.wikipedia.org/wiki/Talk:Aston_Martin_DB9"
+//   },

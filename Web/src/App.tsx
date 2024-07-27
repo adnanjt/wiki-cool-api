@@ -102,7 +102,7 @@ const App: React.FC = () => {
   return (
   <div className="App">
     <Flex gap="middle" wrap>
-      <Layout style={layoutStyle}>
+      <Layout className="wrapper" style={layoutStyle}>
         <Header className="styled-header" style={headerStyle} >      
           <Row align="middle" justify="space-between" style={{ width: '100%' }} >
             <Col>
@@ -119,7 +119,7 @@ const App: React.FC = () => {
           {error !== null ? <div>There is an error: {error}</div>: <div></div>}
           {error === null && !loading && data? <Grid items={data}></Grid>: <div></div>}
         </Content>
-        <Footer style={footerStyle}>Footer</Footer>
+        <Footer className="footer" style={footerStyle}>Footer</Footer>
       </Layout>
     </Flex>
   </div>
