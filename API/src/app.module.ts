@@ -5,13 +5,17 @@ import { HttpModule } from '@nestjs/axios';
 import { HttpExceptionFilter } from './http-exception';
 import { APP_FILTER } from '@nestjs/core';
 
-
 @Module({
   imports: [HttpModule],
   controllers: [AppController, WikiController],
-  providers: [AppService, WikiService, TranslateService, {
-    provide: APP_FILTER,
-    useClass: HttpExceptionFilter,
-  }],
+  providers: [
+    AppService,
+    WikiService,
+    TranslateService,
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
+  ],
 })
 export class AppModule {}

@@ -119,7 +119,7 @@ const App: React.FC = () => {
           {error !== null ? <div>There is an error: {error}</div>: <div></div>}
           {error === null && !loading && data? <Grid items={data}></Grid>: <div></div>}
         </Content>
-        <Footer className="footer" style={footerStyle}>Footer</Footer>
+        <Footer className="footer" style={footerStyle}>Developed by Adnan Tavárez</Footer>
       </Layout>
     </Flex>
   </div>

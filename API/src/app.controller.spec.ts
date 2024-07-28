@@ -30,18 +30,20 @@ describe('WikiController', () => {
         date: '2023-07-28',
         targerLanguage: 'es',
       };
-      const result = [{
-        title: 'Example Article',
-        image: {
-          source: 'http://example.com/image.jpg',
-          width: 800,
-          height: 600,
+      const result = [
+        {
+          title: 'Example Article',
+          image: {
+            source: 'http://example.com/image.jpg',
+            width: 800,
+            height: 600,
+          },
+          description: 'This is an example article',
+          related: 'Related content',
+          type: 'article',
+          contentUrl: 'http://example.com/content',
         },
-        description: 'This is an example article',
-        related: 'Related content',
-        type: 'article',
-        contentUrl: 'http://example.com/content',
-      }];
+      ];
 
       (validateOrReject as jest.Mock).mockResolvedValue(true);
       (wikiService.getAll as jest.Mock).mockResolvedValue(result);
@@ -58,11 +60,16 @@ describe('WikiController', () => {
 
       (validateOrReject as jest.Mock).mockRejectedValue(errors);
 
-      await expect(wikiController.getAll(query)).rejects.toThrow(new HttpException({
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: 'Validation failed',
-        errors,
-      }, HttpStatus.BAD_REQUEST));
+      await expect(wikiController.getAll(query)).rejects.toThrow(
+        new HttpException(
+          {
+            statusCode: HttpStatus.BAD_REQUEST,
+            message: 'Validation failed',
+            errors,
+          },
+          HttpStatus.BAD_REQUEST,
+        ),
+      );
     });
 
     it('should throw a service error', async () => {
@@ -76,11 +83,16 @@ describe('WikiController', () => {
       (validateOrReject as jest.Mock).mockResolvedValue(true);
       (wikiService.getAll as jest.Mock).mockRejectedValue(errors);
 
-      await expect(wikiController.getAll(query)).rejects.toThrow(new HttpException({
-        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: 'Service failed',
-        errors,
-      }, HttpStatus.INTERNAL_SERVER_ERROR));
+      await expect(wikiController.getAll(query)).rejects.toThrow(
+        new HttpException(
+          {
+            statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: 'Service failed',
+            errors,
+          },
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        ),
+      );
     });
   });
 
@@ -92,23 +104,27 @@ describe('WikiController', () => {
         targerLanguage: 'es',
       };
       const language = 'fr';
-      const result = [{
-        title: 'Example Article',
-        image: {
-          source: 'http://example.com/image.jpg',
-          width: 800,
-          height: 600,
+      const result = [
+        {
+          title: 'Example Article',
+          image: {
+            source: 'http://example.com/image.jpg',
+            width: 800,
+            height: 600,
+          },
+          description: 'This is an example article',
+          related: 'Related content',
+          type: 'article',
+          contentUrl: 'http://example.com/content',
         },
-        description: 'This is an example article',
-        related: 'Related content',
-        type: 'article',
-        contentUrl: 'http://example.com/content',
-      }];
+      ];
 
       (validateOrReject as jest.Mock).mockResolvedValue(true);
       (wikiService.postTranslate as jest.Mock).mockResolvedValue(result);
 
-      expect(await wikiController.getAllTranslate(query, language)).toBe(result);
+      expect(await wikiController.getAllTranslate(query, language)).toBe(
+        result,
+      );
     });
 
     it('should throw a validation error', async () => {
@@ -121,11 +137,18 @@ describe('WikiController', () => {
 
       (validateOrReject as jest.Mock).mockRejectedValue(errors);
 
-      await expect(wikiController.getAllTranslate(query, language)).rejects.toThrow(new HttpException({
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: 'Validation failed',
-        errors,
-      }, HttpStatus.BAD_REQUEST));
+      await expect(
+        wikiController.getAllTranslate(query, language),
+      ).rejects.toThrow(
+        new HttpException(
+          {
+            statusCode: HttpStatus.BAD_REQUEST,
+            message: 'Validation failed',
+            errors,
+          },
+          HttpStatus.BAD_REQUEST,
+        ),
+      );
     });
 
     it('should throw a service error', async () => {
@@ -140,11 +163,18 @@ describe('WikiController', () => {
       (validateOrReject as jest.Mock).mockResolvedValue(true);
       (wikiService.postTranslate as jest.Mock).mockRejectedValue(errors);
 
-      await expect(wikiController.getAllTranslate(query, language)).rejects.toThrow(new HttpException({
-        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: 'Service failed',
-        errors,
-      }, HttpStatus.INTERNAL_SERVER_ERROR));
+      await expect(
+        wikiController.getAllTranslate(query, language),
+      ).rejects.toThrow(
+        new HttpException(
+          {
+            statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: 'Service failed',
+            errors,
+          },
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        ),
+      );
     });
   });
 });

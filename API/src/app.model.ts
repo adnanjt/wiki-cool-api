@@ -127,22 +127,6 @@ export interface Wiki {
   contentUrl: string;
 }
 
-// export interface Translation {
-//   title: string;
-//   description: string;
-// }
-
-
-
-
-// "content_urls": {
-//   "desktop": {
-//     "page": "https://en.wikipedia.org/wiki/Aston_Martin_DB9",
-//     "revisions": "https://en.wikipedia.org/wiki/Aston_Martin_DB9?action=history",
-//     "edit": "https://en.wikipedia.org/wiki/Aston_Martin_DB9?action=edit",
-//     "talk": "https://en.wikipedia.org/wiki/Talk:Aston_Martin_DB9"
-//   },
-
 export interface TranslateDto {
-  translatedText: string
+  translatedText: string;
 }

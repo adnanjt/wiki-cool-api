@@ -1,4 +1,12 @@
-import { Controller, Get, Param, Query, HttpException, HttpStatus, Catch } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Query,
+  HttpException,
+  HttpStatus,
+  Catch,
+} from '@nestjs/common';
 import { AppService, WikiService } from './app.service';
 import { WikiGetAllQuery } from './query.dto';
 import { validateOrReject } from 'class-validator';
@@ -34,7 +42,7 @@ export class WikiController {
           errors,
         },
         HttpStatus.BAD_REQUEST,
-      );  
+      );
     }
 
     try {
@@ -48,18 +56,15 @@ export class WikiController {
           errors,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
-      );  
+      );
     }
   }
-  
+
   @Get('translate:language')
   async getAllTranslate(
     @Query() query: WikiGetAllQuery,
     @Param('language') language: any,
   ): Promise<Wiki[]> {
-
-
-    
     try {
       await validateOrReject(query);
     } catch (errors) {
@@ -72,12 +77,15 @@ export class WikiController {
           errors,
         },
         HttpStatus.BAD_REQUEST,
-      );  
+      );
     }
 
     try {
       logger.log(language);
-      return await this.wikiService.postTranslate({...query, targerLanguage: language});
+      return await this.wikiService.postTranslate({
+        ...query,
+        targerLanguage: language,
+      });
     } catch (errors) {
       console.log(errors);
       console.log('Error On querry', errors);
@@ -89,7 +97,6 @@ export class WikiController {
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
-  
     }
   }
 }

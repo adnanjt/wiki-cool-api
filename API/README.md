@@ -18,8 +18,8 @@ This project is a Node.js API built using the NestJS framework. It uses Wikipedi
 
 ### Prerequisites
 
-- Node.js
-- npm
+- Node.js (>= 20.x)
+- npm (>= 10.x)
 
 ## Installation
 

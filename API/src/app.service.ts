@@ -1,10 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
-// import { catchError, firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
-import { catchError, firstValueFrom, map as rxMapper } from 'rxjs';
-import { Wiki, WikiDto, Article, TranslateDto } from './app.model';
+import { catchError, firstValueFrom } from 'rxjs';
+import { Wiki, WikiDto, TranslateDto } from './app.model';
 import { WikiGetAllQuery } from './query.dto';
-import {decode as heDecode} from 'he';
+import { decode as heDecode } from 'he';
 import { AxiosRequestConfig } from 'axios';
 
 @Injectable()
@@ -40,87 +39,92 @@ export class WikiService {
   ): Wiki {
     return {
       title,
-      image: thumbnail ? { source: thumbnail.source, width: thumbnail.width, height: thumbnail.height } : null,
+      image: thumbnail
+        ? {
+            source: thumbnail.source,
+            width: thumbnail.width,
+            height: thumbnail.height,
+          }
+        : null,
       description,
       type,
       related,
-      contentUrl
+      contentUrl,
     };
   }
 
-  // addWikiToList(content: ): void {
-  //   if(data.onthisday) {
-  //     data.onthisday.forEach(day => day.pages.forEach(page => {
-  //       wikiList.push(this.createWikiObject(
-  //         page.titles.normalized,
-  //         page.thumbnail,
-  //         page.description,
-  //         "onthisday",
-  //         day.text
-  //       ));
-  //     }));
-  //   }
-  // }
-
   convertDataToWiki(data: WikiDto): Wiki[] {
     const wikiList: Wiki[] = [];
-    // TODO: improve this to reuse
     if (data.tfa) {
-      wikiList.push(this.createWikiObject(
-        data.tfa.titles.normalized,
-        data.tfa.thumbnail,
-        data.tfa.description,
-        "tfa",
-        data.tfa.content_urls.desktop.page
-      ));
+      wikiList.push(
+        this.createWikiObject(
+          data.tfa.titles.normalized,
+          data.tfa.thumbnail,
+          data.tfa.description,
+          'tfa',
+          data.tfa.content_urls.desktop.page,
+        ),
+      );
     }
 
     if (data.mostread) {
       data.mostread.articles.forEach((article) => {
-        wikiList.push(this.createWikiObject(
-          article.titles.normalized,
-          article.thumbnail,
-          article.description,
-          "mostread",
-          article.content_urls.desktop.page
-        ));
+        wikiList.push(
+          this.createWikiObject(
+            article.titles.normalized,
+            article.thumbnail,
+            article.description,
+            'mostread',
+            article.content_urls.desktop.page,
+          ),
+        );
       });
     }
 
     if (data.picture) {
-      wikiList.push(this.createWikiObject(
-        data.picture.title,
-        data.picture.thumbnail,
-        data.picture.description.text,
-        "picture",
-        data.picture.thumbnail.source
-      ));
+      wikiList.push(
+        this.createWikiObject(
+          data.picture.title,
+          data.picture.thumbnail,
+          data.picture.description.text,
+          'picture',
+          data.picture.thumbnail.source,
+        ),
+      );
     }
 
-    if(data.news) {
-      data.news.forEach(news => news.links.forEach(link => {
-        wikiList.push(this.createWikiObject(
-          link.titles.normalized,
-          link.thumbnail,
-          link.description,
-          "news",
-          link.content_urls.desktop.page,
-          stripHtml(heDecode(decodeUnicode(news.story)))
-        ));
-      }));
+    if (data.news) {
+      data.news.forEach((news) =>
+        news.links.forEach((link) => {
+          wikiList.push(
+            this.createWikiObject(
+              link.titles.normalized,
+              link.thumbnail,
+              link.description,
+              'news',
+              link.content_urls.desktop.page,
+              stripHtml(heDecode(decodeUnicode(news.story))),
+            ),
+          );
+        }),
+      );
     }
 
-    if(data.onthisday) {
-      data.onthisday.forEach(day => day.pages.forEach(page => {
-        wikiList.push(this.createWikiObject(
-          page.titles.normalized,
-          page.thumbnail,
-          page.description,
-          "onthisday",
-          page.content_urls.desktop.page,
-          day.text
-        ));
-      }));
+    if (data.onthisday) {
+      data.onthisday.forEach((day) =>
+        day.pages.forEach((page) => {
+          wikiList.push(
+            this.createWikiObject(
+              page.titles.normalized,
+              page.thumbnail,
+              page.description,
+              'onthisday',
+              page.content_urls.desktop.page,
+              day.text,
+            ),
+          );
+        }),
+      );
     }
 
     return wikiList;
@@ -148,42 +152,32 @@ export class WikiService {
     return this.convertDataToWiki(data);
   }
 
-
-  // const res = await fetch("https://libretranslate.com/translate", {
-  //   method: "POST",
-  //   body: JSON.stringify({
-  //     q: "Hello!",
-  //     source: "en",
-  //     target: "es"
-  //   }),
-  //   headers: { "Content-Type": "application/json" }
-  // });
-  
-  // console.log(await res.json());
-
   async postTranslate(query: WikiGetAllQuery): Promise<Wiki[]> {
     this.logger.log(query);
-    const targerLanguage = query.targerLanguage? query.targerLanguage.substring(1): "en";
+    const targerLanguage = query.targerLanguage
+      ? query.targerLanguage.substring(1)
+      : 'en';
     const dataWikiQuery = await this.getAll(query);
 
     interface TranslateObject {
-      0:number
-      1:string; // title
-      2:string; // description
+      0: number;
+      1: string; // title
+      2: string; // description
     }
 
-    const translationArray: TranslateObject[] = dataWikiQuery.map((wiki, index )=> ({
-      0:index,
-      1:wiki.title,
-      2:wiki.description
-    }))
+    const translationArray: TranslateObject[] = dataWikiQuery.map(
+      (wiki, index) => ({
+        0: index,
+        1: wiki.title,
+        2: wiki.description,
+      }),
+    );
 
-    // JSON.stringify(translationArray)
     const payload = JSON.stringify({
-      q: "Hello!",
+      q: JSON.stringify(translationArray),
       source: query.language,
-      target: targerLanguage
-    })
+      target: targerLanguage,
+    });
 
     this.logger.log(payload);
     const requestConfig: AxiosRequestConfig = {
@@ -197,13 +191,9 @@ export class WikiService {
         .post<TranslateDto>(
           `http://localhost:5000/translate`,
           payload,
-          requestConfig
+          requestConfig,
         )
         .pipe(
-          // rxMapper(result => {
-          //   this.logger.log(result.data);
-          //   return result
-          // }),
           catchError((error) => {
             this.logger.error(error);
             throw 'An error happened!';
@@ -213,15 +203,15 @@ export class WikiService {
 
     console.log(data);
 
-    const jsonTranslationResult = JSON.parse(data.translatedText)
-    // const JSobj = JSON.parse(jsonString);
+    const jsonTranslationResult = JSON.parse(data.translatedText);
+    const translationResult =
+      jsonTranslationResult as unknown as TranslateObject[];
 
-    const translationResult = jsonTranslationResult as unknown as TranslateObject[];
-
-
-    const result: Wiki[] = dataWikiQuery.map((wiki, index )=> ({
-      ...wiki, title:(translationResult[index])[1], description:(translationResult[index])[2]
-    }))
+    const result: Wiki[] = dataWikiQuery.map((wiki, index) => ({
+      ...wiki,
+      title: translationResult[index][1],
+      description: translationResult[index][2],
+    }));
 
     return result;
   }
