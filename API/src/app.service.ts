@@ -159,27 +159,12 @@ export class WikiService {
       : 'en';
     const dataWikiQuery = await this.getAll(query);
 
-    interface TranslateObject {
-      0: number;
-      1: string; // title
-      2: string; // description
-    }
-
-    const translationArray: TranslateObject[] = dataWikiQuery.map(
-      (wiki, index) => ({
-        0: index,
-        1: wiki.title,
-        2: wiki.description,
-      }),
-    );
-
-      // Convert each object to a comma-separated string
     const translationArrayString = dataWikiQuery
     .map((wiki, index) => `${index},${wiki.title},${wiki.description}`)
     .join('\n');
 
     const payload = JSON.stringify({
-      q: translationArrayString,//JSON.stringify(translationArray),
+      q: translationArrayString,
       source: query.language,
       target: targerLanguage,
     });
@@ -206,11 +191,8 @@ export class WikiService {
         ),
     );
 
-    console.log(data.translatedText);
+    this.logger.log(data.translatedText);
 
-    // const jsonTranslationResult = JSON.parse(data.translatedText);
-    // const translationResult =
-    //   jsonTranslationResult as unknown as TranslateObject[];
 
     const translationResult = data.translatedText
     .split('\n')
@@ -218,7 +200,6 @@ export class WikiService {
       const [index, title, description] = line.split(',');
       return { 0: Number(index), 1: title, 2: description };
     });
-    console.log(translationResult);
 
     const result: Wiki[] = dataWikiQuery.map((wiki, index) => ({
       ...wiki,
