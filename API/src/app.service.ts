@@ -2,9 +2,10 @@ import { Injectable, Logger } from '@nestjs/common';
 // import { catchError, firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom, map as rxMapper } from 'rxjs';
-import { Wiki, WikiDto, Article } from './app.model';
+import { Wiki, WikiDto, Article, TranslateDto } from './app.model';
 import { WikiGetAllQuery } from './query.dto';
 import {decode as heDecode} from 'he';
+import { AxiosRequestConfig } from 'axios';
 
 @Injectable()
 export class AppService {
@@ -145,6 +146,84 @@ export class WikiService {
     );
 
     return this.convertDataToWiki(data);
+  }
+
+
+  // const res = await fetch("https://libretranslate.com/translate", {
+  //   method: "POST",
+  //   body: JSON.stringify({
+  //     q: "Hello!",
+  //     source: "en",
+  //     target: "es"
+  //   }),
+  //   headers: { "Content-Type": "application/json" }
+  // });
+  
+  // console.log(await res.json());
+
+  async postTranslate(query: WikiGetAllQuery): Promise<Wiki[]> {
+    this.logger.log(query);
+    const targerLanguage = query.targerLanguage? query.targerLanguage.substring(1): "en";
+    const dataWikiQuery = await this.getAll(query);
+
+    interface TranslateObject {
+      0:number
+      1:string; // title
+      2:string; // description
+    }
+
+    const translationArray: TranslateObject[] = dataWikiQuery.map((wiki, index )=> ({
+      0:index,
+      1:wiki.title,
+      2:wiki.description
+    }))
+
+    // JSON.stringify(translationArray)
+    const payload = JSON.stringify({
+      q: "Hello!",
+      source: query.language,
+      target: targerLanguage
+    })
+
+    this.logger.log(payload);
+    const requestConfig: AxiosRequestConfig = {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+
+    const { data } = await firstValueFrom(
+      this.httpService
+        .post<TranslateDto>(
+          `http://localhost:5000/translate`,
+          payload,
+          requestConfig
+        )
+        .pipe(
+          // rxMapper(result => {
+          //   this.logger.log(result.data);
+          //   return result
+          // }),
+          catchError((error) => {
+            this.logger.error(error);
+            throw 'An error happened!';
+          }),
+        ),
+    );
+
+    console.log(data);
+
+    const jsonTranslationResult = JSON.parse(data.translatedText)
+    // const JSobj = JSON.parse(jsonString);
+
+    const translationResult = jsonTranslationResult as unknown as TranslateObject[];
+
+
+    const result: Wiki[] = dataWikiQuery.map((wiki, index )=> ({
+      ...wiki, title:(translationResult[index])[1], description:(translationResult[index])[2]
+    }))
+
+    return result;
   }
 }
 

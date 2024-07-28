@@ -38,12 +38,19 @@ const Input: React.FC<InputProps> = ({ date, setDate, language, setLanguage, set
   };
 
   const handleLanguageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+
+    const languageCodes = [
+      "bn", "de", "el", "en", "he", "hu", "ja", "la", "sd", "sv", "ur", "zh",
+      "bs", "da", "es", "fi", "fr", "ko", "no", "pl", "pt", "ru", "sco", "vi",
+      "ar"
+    ];
+
     const value = event.target.value.toLowerCase();
     setLanguage(value);
-    if (value === "en" || value === "es") {
+    if (languageCodes.includes(value) || value ==="") {
       setLanguageError("");
     } else {
-      setLanguageError("Language must be either 'en' or 'es'");
+      setLanguageError("Language must be Supported by Wikipedia.");
     }
   };
 
@@ -57,7 +64,7 @@ const Input: React.FC<InputProps> = ({ date, setDate, language, setLanguage, set
     <div>
       <Flex>
         <Tooltip title="Select a date and language to find featured content on Wikipedia">
-          <QuestionCircleOutlined style={{ fontSize: '24px', color: 'white', marginRight: '20px' }} />
+          <QuestionCircleOutlined style={{ fontSize: '24px', color: 'white', marginRight: '20px', marginLeft: '20px' }} />
         </Tooltip>
       
 

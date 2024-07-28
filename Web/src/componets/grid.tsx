@@ -36,7 +36,7 @@ const tabListNoTitle = [
 
 const Grid: React.FC<InputProps> = ({ items }) => {
   // const [activeTabKey1, setActiveTabKey1] = useState<string>('tab1');
-  const [activeTabKey2, setActiveTabKey2] = useState<string>('app');
+  const [activeTabKey2, setActiveTabKey2] = useState<string>('mostread');
 
   // const onTab1Change = (key: string) => {
   //   setActiveTabKey1(key);
@@ -97,6 +97,7 @@ const Grid: React.FC<InputProps> = ({ items }) => {
                   title={item.title}
                   description={item.description}
                   source={item.image?.source || "https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg"}
+                  contentUrl={item.contentUrl}
                 />
               </div>
             ))}

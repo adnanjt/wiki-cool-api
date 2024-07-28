@@ -11,5 +11,6 @@ export interface Wiki {
     description: string;
     related?: string;
     type: string;
+    contentUrl: string;
 }
   
