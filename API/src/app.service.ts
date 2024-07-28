@@ -173,8 +173,13 @@ export class WikiService {
       }),
     );
 
+      // Convert each object to a comma-separated string
+    const translationArrayString = dataWikiQuery
+    .map((wiki, index) => `${index},${wiki.title},${wiki.description}`)
+    .join('\n');
+
     const payload = JSON.stringify({
-      q: JSON.stringify(translationArray),
+      q: translationArrayString,//JSON.stringify(translationArray),
       source: query.language,
       target: targerLanguage,
     });
@@ -201,17 +206,26 @@ export class WikiService {
         ),
     );
 
-    console.log(data);
+    console.log(data.translatedText);
 
-    const jsonTranslationResult = JSON.parse(data.translatedText);
-    const translationResult =
-      jsonTranslationResult as unknown as TranslateObject[];
+    // const jsonTranslationResult = JSON.parse(data.translatedText);
+    // const translationResult =
+    //   jsonTranslationResult as unknown as TranslateObject[];
+
+    const translationResult = data.translatedText
+    .split('\n')
+    .map(line => {
+      const [index, title, description] = line.split(',');
+      return { 0: Number(index), 1: title, 2: description };
+    });
+    console.log(translationResult);
 
     const result: Wiki[] = dataWikiQuery.map((wiki, index) => ({
       ...wiki,
       title: translationResult[index][1],
       description: translationResult[index][2],
     }));
+
 
     return result;
   }
