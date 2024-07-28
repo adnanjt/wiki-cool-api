@@ -1,7 +1,7 @@
 export interface WikiDto {
   tfa: TodayFeatured;
   mostread: MostRead;
-  picture: PictureOfTheDay;
+  image: PictureOfTheDay;
   news: News[];
   onthisday: OnThisDay[];
 }

@@ -98,6 +98,7 @@ const Grid: React.FC<InputProps> = ({ items }) => {
                   description={item.description}
                   source={item.image?.source || "https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg"}
                   contentUrl={item.contentUrl}
+                  related={item.related? item.related: ""}
                 />
               </div>
             ))}

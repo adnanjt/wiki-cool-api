@@ -105,8 +105,8 @@ const App: React.FC = () => {
       <Layout className="wrapper" style={layoutStyle}>
         <Header className="styled-header" style={headerStyle} >      
           <Row align="middle" justify="space-between" style={{ width: '100%' }} >
-            <Col>
-              <img src="/path/to/your/image.png" alt="Logo" className="header-logo" />
+            <Col style={{ height: '100%', marginTop: '27px' }} >
+              <img src="https://www.shutterstock.com/image-vector/internet-design-logoicon-template-600w-1037418430.jpg" alt="Logo" className="header-logo" />
             </Col>
             <Col>
               <h1 className="header-title">Welcome to WikiViewer</h1>

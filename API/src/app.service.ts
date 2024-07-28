@@ -82,15 +82,15 @@ export class WikiService {
         );
       });
     }
-
-    if (data.picture) {
+    this.logger.log(data.image)
+    if (data.image) {
       wikiList.push(
         this.createWikiObject(
-          data.picture.title,
-          data.picture.thumbnail,
-          data.picture.description.text,
-          'picture',
-          data.picture.thumbnail.source,
+          data.image.title,
+          data.image.thumbnail,
+          data.image.description.text,
+          'image',
+          data.image.thumbnail.source,
         ),
       );
     }

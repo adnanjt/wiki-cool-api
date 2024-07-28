@@ -13,9 +13,10 @@ interface WikiCardProps {
   description: string;
   source: string;
   contentUrl: string;
+  related: string;
 }
 // TODO 
-const WikiCard: React.FC<WikiCardProps> = ({title, description,  source, contentUrl}) => 
+const WikiCard: React.FC<WikiCardProps> = ({title, description,  source, contentUrl, related}) => 
   {
     const [read, setRead] = useState(false);
     // event: React.MouseEvent<HTMLAnchorElement>
@@ -61,7 +62,7 @@ const WikiCard: React.FC<WikiCardProps> = ({title, description,  source, content
       <Meta
         avatar={<Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=8" />}
         title={title}
-        description={description}
+        description={description + (related !==""? ". Related to: " + related:"")}
       />
       <div><a href={contentUrl} target="_blank" rel="noopener noreferrer" onClick={handleLanguageChange}  >Read more</a> {read && <Tag color="lime" id={`read-` + title} bordered={false}>read</Tag>}</div>
       
