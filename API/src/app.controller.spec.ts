@@ -2,11 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { WikiController } from './app.controller';
 import { WikiService } from './app.service';
 import { WikiGetAllQuery } from './query.dto';
-import { validateOrReject } from 'class-validator';
 import { HttpException } from '@nestjs/common';
 import { HttpStatus } from '@nestjs/common';
 
-jest.mock('class-validator');
 jest.mock('./app.service');
 
 describe('WikiController', () => {
@@ -45,7 +43,6 @@ describe('WikiController', () => {
         },
       ];
 
-      (validateOrReject as jest.Mock).mockResolvedValue(true);
       (wikiService.getAll as jest.Mock).mockResolvedValue(result);
 
       expect(await wikiController.getAll(query)).toBe(result);
@@ -57,8 +54,8 @@ describe('WikiController', () => {
         date: 'invalid-date', // Invalid date format
       };
       const errors = new Error('Validation failed');
-
-      (validateOrReject as jest.Mock).mockRejectedValue(errors);
+      
+      (wikiService.getAll as jest.Mock).mockRejectedValue(errors);
 
       await expect(wikiController.getAll(query)).rejects.toThrow(
         new HttpException(
@@ -80,14 +77,13 @@ describe('WikiController', () => {
       };
       const errors = new Error('Service error');
 
-      (validateOrReject as jest.Mock).mockResolvedValue(true);
       (wikiService.getAll as jest.Mock).mockRejectedValue(errors);
 
       await expect(wikiController.getAll(query)).rejects.toThrow(
         new HttpException(
           {
             statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-            message: 'Service failed',
+            message: 'Service error',
             errors,
           },
           HttpStatus.INTERNAL_SERVER_ERROR,
@@ -119,7 +115,6 @@ describe('WikiController', () => {
         },
       ];
 
-      (validateOrReject as jest.Mock).mockResolvedValue(true);
       (wikiService.postTranslate as jest.Mock).mockResolvedValue(result);
 
       expect(await wikiController.getAllTranslate(query, language)).toBe(
@@ -135,7 +130,7 @@ describe('WikiController', () => {
       const language = 'fr';
       const errors = new Error('Validation failed');
 
-      (validateOrReject as jest.Mock).mockRejectedValue(errors);
+      (wikiService.postTranslate as jest.Mock).mockRejectedValue(errors);
 
       await expect(
         wikiController.getAllTranslate(query, language),
@@ -160,7 +155,6 @@ describe('WikiController', () => {
       const language = 'fr';
       const errors = new Error('Service error');
 
-      (validateOrReject as jest.Mock).mockResolvedValue(true);
       (wikiService.postTranslate as jest.Mock).mockRejectedValue(errors);
 
       await expect(
@@ -169,7 +163,7 @@ describe('WikiController', () => {
         new HttpException(
           {
             statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-            message: 'Service failed',
+            message: 'Service error',
             errors,
           },
           HttpStatus.INTERNAL_SERVER_ERROR,

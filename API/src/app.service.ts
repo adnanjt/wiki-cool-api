@@ -1,10 +1,12 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger,   HttpException,
+  HttpStatus } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import { Wiki, WikiDto, TranslateDto } from './app.model';
 import { WikiGetAllQuery } from './query.dto';
 import { decode as heDecode } from 'he';
 import { AxiosRequestConfig } from 'axios';
+import { validateOrReject } from 'class-validator';
 
 @Injectable()
 export class AppService {
@@ -131,84 +133,132 @@ export class WikiService {
   }
 
   async getAll(query: WikiGetAllQuery): Promise<Wiki[]> {
-    this.logger.log(query);
-    const { data } = await firstValueFrom(
-      this.httpService
-        .get<WikiDto>(
-          `https://api.wikimedia.org/feed/v1/wikipedia/${query.language}/featured/${query.date}`,
-        )
-        .pipe(
-          // rxMapper(result => {
-          //   this.logger.log(result.data);
-          //   return result
-          // }),
-          catchError((error) => {
-            this.logger.error(error);
-            throw 'An error happened!';
-          }),
-        ),
-    );
+    try {
+      await validateOrReject(query);
+    } catch (errors) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'Validation failed',
+          errors,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
-    return this.convertDataToWiki(data);
+    try {
+      const { data } = await firstValueFrom(
+        this.httpService
+          .get<WikiDto>(
+            `https://api.wikimedia.org/feed/v1/wikipedia/${query.language}/featured/${query.date}`,
+          )
+          .pipe(
+            // rxMapper(result => {
+            //   this.logger.log(result.data);
+            //   return result
+            // }),
+            catchError((error) => {
+              this.logger.error(error);
+              throw 'An error happened!';
+            }),
+          ),
+      );
+
+      return this.convertDataToWiki(data);
+    } catch (errors) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: 'Service failed',
+          errors,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async postTranslate(query: WikiGetAllQuery): Promise<Wiki[]> {
-    this.logger.log(query);
-    const targerLanguage = query.targerLanguage
-      ? query.targerLanguage.substring(1)
-      : 'en';
-    const dataWikiQuery = await this.getAll(query);
+    try {
+      await validateOrReject(query);
+    } catch (errors) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'Validation failed',
+          errors,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
-    const translationArrayString = dataWikiQuery
-    .map((wiki, index) => `${index},${wiki.title},${wiki.description}`)
-    .join('\n');
+    try {
+      this.logger.log(query);
+      const targerLanguage = query.targerLanguage
+        ? query.targerLanguage.substring(1)
+        : 'en';
+      const dataWikiQuery = await this.getAll(query);
 
-    const payload = JSON.stringify({
-      q: translationArrayString,
-      source: query.language,
-      target: targerLanguage,
-    });
+      const translationArrayString = dataWikiQuery
+      .map((wiki, index) => `${index},${wiki.title},${wiki.description}`)
+      .join('\n');
 
-    this.logger.log(payload);
-    const requestConfig: AxiosRequestConfig = {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
+      const payload = JSON.stringify({
+        q: translationArrayString,
+        source: query.language,
+        target: targerLanguage,
+      });
 
-    const { data } = await firstValueFrom(
-      this.httpService
-        .post<TranslateDto>(
-          `http://localhost:5000/translate`,
-          payload,
-          requestConfig,
-        )
-        .pipe(
-          catchError((error) => {
-            this.logger.error(error);
-            throw 'An error happened!';
-          }),
-        ),
-    );
+      this.logger.log(payload);
+      const requestConfig: AxiosRequestConfig = {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
 
-    this.logger.log(data.translatedText);
+      const { data } = await firstValueFrom(
+        this.httpService
+          .post<TranslateDto>(
+            `http://localhost:5000/translate`,
+            payload,
+            requestConfig,
+          )
+          .pipe(
+            catchError((error) => {
+              this.logger.error(error);
+              throw 'An error happened!';
+            }),
+          ),
+      );
 
-
-    const translationResult = data.translatedText
-    .split('\n')
-    .map(line => {
-      const [index, title, description] = line.split(',');
-      return { 0: Number(index), 1: title, 2: description };
-    });
-
-    const result: Wiki[] = dataWikiQuery.map((wiki, index) => ({
-      ...wiki,
-      title: translationResult[index][1],
-      description: translationResult[index][2],
-    }));
+      this.logger.log(data.translatedText);
 
 
-    return result;
+      const translationResult = data.translatedText
+      .split('\n')
+      .map(line => {
+        const [index, title, description] = line.split(',');
+        return { 0: Number(index), 1: title, 2: description };
+      });
+
+      const result: Wiki[] = dataWikiQuery.map((wiki, index) => ({
+        ...wiki,
+        title: translationResult[index][1],
+        description: translationResult[index][2],
+      }));
+
+
+      return result;
+    } catch (errors) {
+      console.log('Service failed', errors);
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: 'Service failed',
+          errors,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }
 
