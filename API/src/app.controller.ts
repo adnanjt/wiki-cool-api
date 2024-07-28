@@ -25,9 +25,30 @@ export class WikiController {
   async getAll(@Query() query: WikiGetAllQuery): Promise<Wiki[]> {
     try {
       await validateOrReject(query);
-      return this.wikiService.getAll(query);
     } catch (errors) {
       console.log('Validation failed', errors);
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'Validation failed',
+          errors,
+        },
+        HttpStatus.BAD_REQUEST,
+      );  
+    }
+
+    try {
+      return await this.wikiService.getAll(query);
+    } catch (errors) {
+      console.log('Service failed', errors);
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: 'Service failed',
+          errors,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );  
     }
   }
   
